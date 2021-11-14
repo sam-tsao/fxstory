@@ -23,20 +23,23 @@
             >{{ obj }}</a
           >
         </td>
-        <td><a
-           :href="'https://tzkt.io/' + buyerAddresses[i]"
-          target="_blank"
-        >{{ shortenAddress(buyerAddresses[i]) }}</a></td>
-        <td><a
-          :href="'https://tzkt.io/' + sellerAddresses[i]"
-          target="_blank"
-        > {{ shortenAddress(sellerAddresses[i]) }}</a></td>
+        <td>
+          <a :href="'https://tzkt.io/' + buyerAddresses[i]" target="_blank">{{
+            shortenAddress(buyerAddresses[i])
+          }}</a>
+        </td>
+        <td>
+          <a :href="'https://tzkt.io/' + sellerAddresses[i]" target="_blank">
+            {{ shortenAddress(sellerAddresses[i]) }}</a
+          >
+        </td>
         <td>{{ soldPrice[i].toFixed(2) }}</td>
         <td>{{ royaltyAmt[i] }}</td>
-        <td><a
-        :href="'https://tzkt.io/' + opHashes[i]"
-        target="_blank"
-        >{{ timeStamps[i] }}</a></td>
+        <td>
+          <a :href="'https://tzkt.io/' + opHashes[i]" target="_blank">{{
+            timeStamps[i]
+          }}</a>
+        </td>
       </tr>
     </table>
   </div>
@@ -63,8 +66,16 @@ export default {
     sellerAddresses: [],
     timeStamps: [],
     addressEntered: false,
+    calledFromHistory: false,
   }),
-  created() {},
+  created() {
+    let path = this.$router.history.current.fullPath;
+    if (path.length > 2) {
+      this.calledFromHistory = true;
+      this.userAddress = path.substring(7);
+      this.getObjktNames();
+    }
+  },
   methods: {
     shortenAddress: function (addr) {
       let first = addr.substring(0, 4);
@@ -99,6 +110,14 @@ export default {
     },
     getObjktNames: async function () {
       this.query = `accounts/${this.userAddress}/operations?sender=${this.sender}&type=transaction`;
+      if (!this.calledFromHistory) {
+        this.$router.replace({
+          query: {
+            ...this.$router.query,
+            addr: this.userAddress,
+          },
+        });
+      }
       this.addressEntered = true;
       await this.getTransactionData();
       for (let i = 0; i < this.objktIds.length; i++) {
