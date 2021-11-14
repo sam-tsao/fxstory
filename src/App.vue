@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div>FXSTORY</div>
+    <h1>FXSTORY</h1>
     <router-view/>
     <footer>
       made by <a href="https://twitter.com/sam___tsao" target="_blank">Sam Tsao </a>
@@ -13,7 +13,9 @@
   font-family: Courier, monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+}
+h1 {
+  padding: 0 2vw;
 }
 
 footer {

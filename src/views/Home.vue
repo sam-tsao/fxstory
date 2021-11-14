@@ -1,19 +1,19 @@
 <template>
   <div class="home">
-    <div>
+    <div id="tagline">
       a simple tool to show secondary sales from
       <a href="https://www.fxhash.xyz/" target="_blank">FXHASH</a>
-    </div>
     <input v-model="userAddress" placeholder="Wallet address" />
     <button v-on:click="getObjktNames">go</button>
+    </div>
     <table v-if="addressEntered && objktIds.length > 0">
       <tr>
-        <td>Token name</td>
-        <td>Buyer</td>
-        <td>Seller</td>
-        <td>Sold for</td>
-        <td>Royalties Received</td>
-        <td>Timestamp</td>
+        <td><h3>Token name</h3></td>
+        <td><h3>Buyer</h3></td>
+        <td><h3>Seller</h3></td>
+        <td><h3>Sold for</h3></td>
+        <td><h3>Royalties<br>Received</h3></td>
+        <td><h3>Timestamp</h3></td>
       </tr>
       <tr v-for="(obj, i) in objktNames" :key="i">
         <td>
@@ -154,6 +154,15 @@ export default {
 
 <style>
 td {
-  padding: 0 20px;
+  padding-right: 2vw;
+}
+table {
+  padding: 3vh 2vw;
+}
+#tagline {
+  padding: 0 2vw;
+}
+input {
+  margin-left: 1vw;
 }
 </style>
