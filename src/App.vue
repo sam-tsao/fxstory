@@ -2,26 +2,22 @@
   <div id="app">
     <div>FXSTORY</div>
     <router-view/>
+    <footer>
+      made by <a href="https://twitter.com/sam___tsao" target="_blank">Sam Tsao </a>
+    </footer>
   </div>
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+* {
+  font-family: Courier, monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+footer {
+  padding-top: 5vh;
+  text-align: right;
 }
 </style>
