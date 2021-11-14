@@ -77,6 +77,15 @@ export default {
     }
   },
   methods: {
+    clearData: function(){
+      this.opHashes = []
+      this.objkIds = []
+      this.soldPrice = []
+      this.royaltyAmt = []
+      this.objktNames = []
+      this.buyerAddresses = []
+      this.sellerAddresses = []
+    },
     shortenAddress: function (addr) {
       let first = addr.substring(0, 4);
       let last = addr.substring(31);
@@ -86,8 +95,11 @@ export default {
       const response = await fetch(this.tzkt + this.query);
       const data = await response.json();
       data.forEach((d) => {
-        this.opHashes.push(d.hash);
-        this.timeStamps.push(d.timestamp);
+        //make sure transaction is not user buying
+        if(d.initiator.address != this.userAddress){
+          this.opHashes.push(d.hash);
+          this.timeStamps.push(d.timestamp);
+        }
       });
     },
     getTransactionData: async function () {
@@ -109,15 +121,14 @@ export default {
       }
     },
     getObjktNames: async function () {
+      this.clearData();
       this.query = `accounts/${this.userAddress}/operations?sender=${this.sender}&type=transaction`;
-      if (!this.calledFromHistory) {
         this.$router.replace({
           query: {
             ...this.$router.query,
             addr: this.userAddress,
           },
         });
-      }
       this.addressEntered = true;
       await this.getTransactionData();
       for (let i = 0; i < this.objktIds.length; i++) {
