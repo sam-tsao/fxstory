@@ -156,6 +156,9 @@ export default {
 td {
   padding-right: 2vw;
 }
+tr:nth-child(even) {
+  background: #ccc;
+}
 table {
   padding: 3vh 2vw;
 }
