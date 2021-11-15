@@ -3,19 +3,23 @@
     <div id="tagline">
       a simple tool to show secondary sales from
       <a href="https://www.fxhash.xyz/" target="_blank">FXHASH</a>
-    <input v-model="userAddress" placeholder="Wallet address" />
-    <button v-on:click="getObjktNames">go</button>
+      <input v-model="userAddress" placeholder="Wallet address" />
+      <button v-on:click="getObjktNames">go</button>
     </div>
     <table v-if="addressEntered && objktIds.length > 0">
       <tr>
+        <td></td>
         <td><h3>Token name</h3></td>
         <td><h3>Buyer</h3></td>
         <td><h3>Seller</h3></td>
         <td><h3>Sold for</h3></td>
-        <td><h3>Royalties<br>Received</h3></td>
+        <td>
+          <h3>Royalties<br />Received</h3>
+        </td>
         <td><h3>Timestamp</h3></td>
       </tr>
       <tr v-for="(obj, i) in objktNames" :key="i">
+        <td>{{i+1}}</td>
         <td>
           <a
             :href="'https://www.fxhash.xyz/objkt/' + objktIds[i]"
@@ -41,6 +45,15 @@
           }}</a>
         </td>
       </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Total:</td>
+        <td>{{soldTotal}}</td>
+        <td>{{ royaltyTotal }}</td>
+        <td></td>
+      </tr>
     </table>
   </div>
 </template>
@@ -65,6 +78,8 @@ export default {
     buyerAddresses: [],
     sellerAddresses: [],
     timeStamps: [],
+    royaltyTotal: 0,
+    soldTotal: 0,
     addressEntered: false,
     calledFromHistory: false,
   }),
@@ -76,15 +91,20 @@ export default {
       this.getObjktNames();
     }
   },
+
   methods: {
-    clearData: function(){
-      this.opHashes = []
-      this.objkIds = []
-      this.soldPrice = []
-      this.royaltyAmt = []
-      this.objktNames = []
-      this.buyerAddresses = []
-      this.sellerAddresses = []
+    sumArray: function (arr) {
+      let temp = arr.map((f) => parseFloat(f));
+      return temp.reduce((prev, curr) => prev + curr);
+    },
+    clearData: function () {
+      this.opHashes = [];
+      this.objkIds = [];
+      this.soldPrice = [];
+      this.royaltyAmt = [];
+      this.objktNames = [];
+      this.buyerAddresses = [];
+      this.sellerAddresses = [];
     },
     shortenAddress: function (addr) {
       let first = addr.substring(0, 4);
@@ -96,7 +116,7 @@ export default {
       const data = await response.json();
       data.forEach((d) => {
         //make sure transaction is not user buying
-        if(d.initiator.address != this.userAddress){
+        if (d.initiator.address != this.userAddress) {
           this.opHashes.push(d.hash);
           this.timeStamps.push(d.timestamp);
         }
@@ -123,12 +143,12 @@ export default {
     getObjktNames: async function () {
       this.clearData();
       this.query = `accounts/${this.userAddress}/operations?sender=${this.sender}&type=transaction`;
-        this.$router.replace({
-          query: {
-            ...this.$router.query,
-            addr: this.userAddress,
-          },
-        });
+      this.$router.replace({
+        query: {
+          ...this.$router.query,
+          addr: this.userAddress,
+        },
+      });
       this.addressEntered = true;
       await this.getTransactionData();
       for (let i = 0; i < this.objktIds.length; i++) {
@@ -147,12 +167,18 @@ export default {
         const ipfsData = await ipfsResponse.json();
         this.objktNames.push(ipfsData.name);
       }
+        this.royaltyTotal = this.sumArray(this.royaltyAmt)
+        this.soldTotal = this.sumArray(this.soldPrice)
     },
   },
 };
 </script>
 
 <style>
+h3 {
+  padding-top: 3vh;
+  margin: 0;
+}
 td {
   padding-right: 2vw;
 }
@@ -160,7 +186,7 @@ tr:nth-child(even) {
   background: #ccc;
 }
 table {
-  padding: 3vh 2vw;
+  padding: 0vh 2vw;
 }
 #tagline {
   padding: 0 2vw;
