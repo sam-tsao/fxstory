@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div id="tagline">
-      a simple tool to show secondary sales from
+      a simple tool for creators to see secondary sales from
       <a href="https://www.fxhash.xyz/" target="_blank">FXHASH</a>
       <input v-model="userAddress" placeholder="Wallet address" />
       <button v-on:click="getObjktNames">go</button>
@@ -37,8 +37,8 @@
             {{ shortenAddress(sellerAddresses[i]) }}</a
           >
         </td>
-        <td>{{ soldPrice[i].toFixed(2) }}</td>
-        <td>{{ royaltyAmt[i] }}</td>
+        <td>{{ soldPrice[i].toFixed(3) }}</td>
+        <td>{{ royaltyAmt[i].toFixed(3) }}</td>
         <td>
           <a :href="'https://tzkt.io/' + opHashes[i]" target="_blank">{{
             timeStamps[i]
@@ -50,8 +50,8 @@
         <td></td>
         <td></td>
         <td>Total:</td>
-        <td>{{soldTotal}}</td>
-        <td>{{ royaltyTotal }}</td>
+        <td>{{soldTotal.toFixed(3)}}</td>
+        <td>{{ royaltyTotal.toFixed(3) }}</td>
         <td></td>
       </tr>
     </table>
@@ -78,10 +78,7 @@ export default {
     buyerAddresses: [],
     sellerAddresses: [],
     timeStamps: [],
-    royaltyTotal: 0,
-    soldTotal: 0,
     addressEntered: false,
-    calledFromHistory: false,
   }),
   created() {
     let path = this.$router.history.current.fullPath;
@@ -91,7 +88,14 @@ export default {
       this.getObjktNames();
     }
   },
-
+  computed: {
+    royaltyTotal: function(){
+        return this.sumArray(this.royaltyAmt)
+    },
+    soldTotal: function(){
+      return this.sumArray(this.soldPrice)
+    }
+  },
   methods: {
     sumArray: function (arr) {
       let temp = arr.map((f) => parseFloat(f));
@@ -134,7 +138,7 @@ export default {
         this.objktIds.push(content.objkt_id);
         this.soldPrice.push(content.price * 0.000001);
         this.royaltyAmt.push(
-          (this.soldPrice[i] * content.royalties * 0.001).toFixed(2)
+          (this.soldPrice[i] * content.royalties * 0.001)
         );
         this.buyerAddresses.push(data[id].sender.address);
         this.sellerAddresses.push(data[data.length - 1].target.address);
@@ -142,7 +146,7 @@ export default {
     },
     getObjktNames: async function () {
       this.clearData();
-      this.query = `accounts/${this.userAddress}/operations?sender=${this.sender}&type=transaction`;
+      this.query = `accounts/${this.userAddress}/operations?sender=${this.sender}&type=transaction&limit=1000`;
       this.$router.replace({
         query: {
           ...this.$router.query,
@@ -167,8 +171,6 @@ export default {
         const ipfsData = await ipfsResponse.json();
         this.objktNames.push(ipfsData.name);
       }
-        this.royaltyTotal = this.sumArray(this.royaltyAmt)
-        this.soldTotal = this.sumArray(this.soldPrice)
     },
   },
 };
@@ -181,7 +183,9 @@ h3 {
 }
 td {
   padding-right: 2vw;
+  text-align:center;
 }
+
 tr:nth-child(even) {
   background: #ccc;
 }
